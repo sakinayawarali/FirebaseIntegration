@@ -74,16 +74,26 @@ class _CreateScreenState extends State<CreateScreen> {
               ),
               ElevatedButton(
                 onPressed: () async {
-                  // Iterate over the dummy data and add each entry to Firestore
-                  for (final data in dummyData) {
+                  if (_formKey.currentState!.validate()) {
+                    final user = FirebaseAuth.instance.currentUser;
+                    final timestamp = DateTime.now();
+                    final formattedTimestamp =
+                        DateFormat('yyyy-MM-dd HH:mm').format(timestamp);
+
                     await FirebaseFirestore.instance
                         .collection('entries')
                         .doc()
-                        .set(data);
-                  }
+                        .set({
+                      'title': _titleController.text,
+                      'description': _descriptionController.text,
+                      'uploaderName': _uploaderNameController.text,
+                      'profilePicture': _profilePictureUrl,
+                      'createdAt': formattedTimestamp,
+                      'userId': user!.uid,
+                    });
 
-                  // Navigate back to the previous screen
-                  Navigator.pop(context);
+                    Navigator.pop(context);
+                  }
                 },
                 child:
                     Text(widget.documentSnapshot != null ? 'Update' : 'Create'),
@@ -95,96 +105,3 @@ class _CreateScreenState extends State<CreateScreen> {
     );
   }
 }
-
-List<Map<String, dynamic>> dummyData = [
-  {
-    'uploaderName': 'John Doe',
-    'title': 'Beautiful Sunset',
-    'description': 'Enjoying a beautiful sunset at the beach.',
-    'createdAt': DateTime.now()
-        .subtract(Duration(days: 2)), // Example date, adjust as needed
-    'profilePicture':
-        'https://w7.pngwing.com/pngs/178/595/png-transparent-user-profile-computer-icons-login-user-avatars-thumbnail.png',
-  },
-  {
-    'uploaderName': 'Alice Smith',
-    'title': 'Delicious Dinner',
-    'description': 'A mouth-watering dinner cooked with love.',
-    'createdAt': DateTime.now()
-        .subtract(Duration(days: 1)), // Example date, adjust as needed
-    'profilePicture':
-        'https://w7.pngwing.com/pngs/178/595/png-transparent-user-profile-computer-icons-login-user-avatars-thumbnail.png',
-  },
-  {
-    'uploaderName': 'Emily Johnson',
-    'title': 'Spectacular Mountain View',
-    'description': 'A breathtaking view of snow-capped mountains.',
-    'createdAt': DateTime.now()
-        .subtract(Duration(hours: 6)), // Example date, adjust as needed
-    'profilePicture':
-        'https://w7.pngwing.com/pngs/178/595/png-transparent-user-profile-computer-icons-login-user-avatars-thumbnail.png',
-  },
-  {
-    'uploaderName': 'David Brown',
-    'title': 'Adorable Puppy',
-    'description': 'Playing fetch with a cute little puppy.',
-    'createdAt': DateTime.now()
-        .subtract(Duration(minutes: 30)), // Example date, adjust as needed
-    'profilePicture':
-        'https://w7.pngwing.com/pngs/178/595/png-transparent-user-profile-computer-icons-login-user-avatars-thumbnail.png',
-  },
-  {
-    'uploaderName': 'Sophia Wilson',
-    'title': 'Cozy Reading Nook',
-    'description': 'Curling up with a good book in a cozy reading nook.',
-    'createdAt': DateTime.now()
-        .subtract(Duration(days: 2)), // Example date, adjust as needed
-    'profilePicture':
-        'https://w7.pngwing.com/pngs/178/595/png-transparent-user-profile-computer-icons-login-user-avatars-thumbnail.png',
-  },
-  {
-    'uploaderName': 'Ethan Martinez',
-    'title': 'Scenic Countryside',
-    'description': 'Exploring the tranquil beauty of the countryside.',
-    'createdAt': DateTime.now()
-        .subtract(Duration(days: 1)), // Example date, adjust as needed
-    'profilePicture':
-        'https://w7.pngwing.com/pngs/178/595/png-transparent-user-profile-computer-icons-login-user-avatars-thumbnail.png',
-  },
-  {
-    'uploaderName': 'Olivia Anderson',
-    'title': 'Vibrant Flower Garden',
-    'description': 'Strolling through a garden filled with colorful flowers.',
-    'createdAt': DateTime.now()
-        .subtract(Duration(hours: 6)), // Example date, adjust as needed
-    'profilePicture':
-        'https://w7.pngwing.com/pngs/178/595/png-transparent-user-profile-computer-icons-login-user-avatars-thumbnail.png',
-  },
-  {
-    'uploaderName': 'Noah Taylor',
-    'title': 'Epic Road Trip',
-    'description': 'Embarking on an epic road trip across the country.',
-    'createdAt': DateTime.now()
-        .subtract(Duration(minutes: 30)), // Example date, adjust as needed
-    'profilePicture':
-        'https://w7.pngwing.com/pngs/178/595/png-transparent-user-profile-computer-icons-login-user-avatars-thumbnail.png',
-  },
-  {
-    'uploaderName': 'Ava Thomas',
-    'title': 'Charming Seaside Village',
-    'description': 'Exploring a charming seaside village on a sunny day.',
-    'createdAt': DateTime.now()
-        .subtract(Duration(days: 2)), // Example date, adjust as needed
-    'profilePicture':
-        'https://w7.pngwing.com/pngs/178/595/png-transparent-user-profile-computer-icons-login-user-avatars-thumbnail.png',
-  },
-  {
-    'uploaderName': 'Liam Clark',
-    'title': 'Magical Starry Night',
-    'description': 'Gazing at the stars on a clear, magical night.',
-    'createdAt': DateTime.now()
-        .subtract(Duration(days: 1)), // Example date, adjust as needed
-    'profilePicture':
-        'https://w7.pngwing.com/pngs/178/595/png-transparent-user-profile-computer-icons-login-user-avatars-thumbnail.png',
-  },
-];

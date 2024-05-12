@@ -1,5 +1,8 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 import 'package:assignment3/screens/create_screen.dart';
+import 'package:assignment3/screens/edit_screen.dart';
+import 'package:assignment3/screens/login_screen.dart';
+import 'package:assignment3/utils/auth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -191,7 +194,7 @@ class _MainScreenState extends State<mainScreen> {
                 children: [
                   Padding(
                     padding: const EdgeInsets.only(
-                        left: 20.0, right: 15.0, top: 16.0, bottom: 10.0),
+                        left: 20.0, right: 15.0, top: 16.0, bottom: 0.0),
                     child: Row(
                       children: const [
                         Text(
@@ -224,9 +227,10 @@ class _MainScreenState extends State<mainScreen> {
 
                         final entries = snapshot.data!.docs;
                         return Container(
-                          width: MediaQuery.of(context).size.width * 0.95,
-                          color: Color.fromARGB(255, 242, 246, 247),
+                          width: MediaQuery.of(context).size.width * 0.90,
+                          color: Colors.white,
                           child: ListView.builder(
+                            reverse: true,
                             itemCount: entries.length,
                             itemBuilder: (context, index) {
                               final entry = entries[index];
@@ -239,113 +243,131 @@ class _MainScreenState extends State<mainScreen> {
                                   entry['createdAt'] as Timestamp?;
                               final profilePictureUrl =
                                   entry['profilePicture'] as String?;
-
-                              return Card(
-                                color: Color.fromARGB(255, 242, 246, 247),
-                                margin: EdgeInsets.all(8.0),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(15.0),
-                                ),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 16.0, vertical: 8.0),
-                                      child: Row(
-                                        children: [
-                                          CircleAvatar(
-                                            backgroundImage: NetworkImage(
-                                                profilePictureUrl ?? ''),
-                                            radius: 24.0,
-                                          ),
-                                          SizedBox(width: 12.0),
-                                          Text(
-                                            uploaderName ?? '',
-                                            style: TextStyle(
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 14.0,
-                                            ),
-                                          ),
-                                          Spacer(),
-                                          Container(
-                                            child: Text(
-                                            timeago.format(
-                                              createdAt?.toDate() ??
-                                                  DateTime.now(),
-                                              locale: 'en',
-                                            ),
-                                            style: TextStyle(
-                                              fontSize: 12.0,
-                                              color: Colors.grey,
-                                            ),
-                                          ),),
-                                          
-                                        ],
+                              DocumentSnapshot documentSnapshot;
+                              return GestureDetector(
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => EditDetails(
+                                        title: title ??
+                                            '', // Pass the title of the entry
+                                        description: description ??
+                                            '', // Pass the description of the entry
+                                        uploaderName: uploaderName ??
+                                            '', // Pass the uploader name of the entry
                                       ),
                                     ),
-                                    Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 16.0),
-                                      child: Text(
-                                        title ?? '',
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 16.0,
+                                  );
+                                },
+                                child: Card(
+                                  color: Color.fromARGB(255, 242, 246, 247),
+                                  //margin: EdgeInsets.all(8.0),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(15.0),
+                                  ),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 16.0, vertical: 8.0),
+                                        child: Row(
+                                          children: [
+                                            CircleAvatar(
+                                              backgroundImage: NetworkImage(
+                                                  profilePictureUrl ?? ''),
+                                              radius: 24.0,
+                                            ),
+                                            SizedBox(width: 12.0),
+                                            Text(
+                                              uploaderName ?? '',
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 14.0,
+                                              ),
+                                            ),
+                                            Spacer(),
+                                            Container(
+                                              child: Text(
+                                                timeago.format(
+                                                  createdAt?.toDate() ??
+                                                      DateTime.now(),
+                                                  locale: 'en',
+                                                ),
+                                                style: TextStyle(
+                                                  fontSize: 12.0,
+                                                  color: Colors.grey,
+                                                ),
+                                              ),
+                                            ),
+                                          ],
                                         ),
                                       ),
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 16.0, vertical: 8.0),
-                                      child: Text(
-                                        description ?? '',
-                                        style: TextStyle(
-                                          fontSize: 14.0,
-                                          color: Colors.grey,
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 16.0),
+                                        child: Text(
+                                          title ?? '',
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 16.0,
+                                          ),
                                         ),
                                       ),
-                                    ),
-                                    Padding(
-                                      padding: EdgeInsets.symmetric(
-                                          horizontal: 16.0, vertical: 8.0),
-                                      child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.end,
-                                        children: [
-                                          Icon(
-                                            Icons.favorite,
-                                            size: 16.0,
-                                            color: Color.fromRGBO(
-                                                170, 171, 172, 1),
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 16.0, vertical: 8.0),
+                                        child: Text(
+                                          description ?? '',
+                                          style: TextStyle(
+                                            fontSize: 14.0,
+                                            color: Colors.grey,
                                           ),
-                                          SizedBox(width: 4.0),
-                                          Text(
-                                            '2',
-                                            style: TextStyle(
-                                              fontSize: 12.0,
-                                              color: Colors.grey,
-                                            ),
-                                          ),
-                                          SizedBox(width: 8.0),
-                                          Icon(
-                                            Icons.comment_rounded,
-                                            size: 16.0,
-                                            color: Color.fromRGBO(
-                                                170, 171, 172, 1),
-                                          ),
-                                          SizedBox(width: 4.0),
-                                          Text(
-                                            '0',
-                                            style: TextStyle(
-                                              fontSize: 12.0,
-                                              color: Colors.grey,
-                                            ),
-                                          ),
-                                        ],
+                                        ),
                                       ),
-                                    )
-                                  ],
+                                      Padding(
+                                        padding: EdgeInsets.symmetric(
+                                            horizontal: 16.0, vertical: 8.0),
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.end,
+                                          children: [
+                                            Icon(
+                                              Icons.favorite,
+                                              size: 16.0,
+                                              color: Color.fromRGBO(
+                                                  170, 171, 172, 1),
+                                            ),
+                                            SizedBox(width: 4.0),
+                                            Text(
+                                              '2',
+                                              style: TextStyle(
+                                                fontSize: 12.0,
+                                                color: Colors.grey,
+                                              ),
+                                            ),
+                                            SizedBox(width: 8.0),
+                                            Icon(
+                                              Icons.comment_rounded,
+                                              size: 16.0,
+                                              color: Color.fromRGBO(
+                                                  170, 171, 172, 1),
+                                            ),
+                                            SizedBox(width: 4.0),
+                                            Text(
+                                              '0',
+                                              style: TextStyle(
+                                                fontSize: 12.0,
+                                                color: Colors.grey,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      )
+                                    ],
+                                  ),
                                 ),
                               );
                             },
@@ -390,10 +412,22 @@ class _MainScreenState extends State<mainScreen> {
                   color: Colors.grey,
                 ),
                 IconButton(
-                  onPressed: () {
-                    // Add your navigation logic here
+                  onPressed: () async {
+                    bool signOutSuccess = await signOutFromGoogle();
+                    await FirebaseAuth.instance.signOut();
+                    var userCredential = FirebaseAuth.instance.currentUser;
+                    if (signOutSuccess && userCredential == null) {
+                      print('Sign-out successful!');
+                      setState(() {
+                        User? firebaseUser = null;
+                      });
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(builder: (context) => LoginPage()),
+                      );
+                    }
                   },
-                  icon: const Icon(Icons.settings),
+                  icon: const Icon(Icons.logout),
                   color: Colors.grey,
                 ),
               ],

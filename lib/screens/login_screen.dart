@@ -1,4 +1,5 @@
-// ignore_for_file: library_private_types_in_public_api, use_super_parameters, prefer_const_constructors, use_build_context_synchronously
+// ignore_for_file: prefer_const_constructors
+
 import 'package:assignment3/main.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -36,7 +37,7 @@ class _LoginPageState extends State<LoginPage> {
                     style: TextStyle(
                       fontSize: 30,
                       fontWeight: FontWeight.bold,
-                      color: Color.fromRGBO(251, 124, 101, 50),
+                      color: Colors.black, // Updated color
                     ),
                   ),
                   SizedBox(height: 20),
@@ -49,6 +50,7 @@ class _LoginPageState extends State<LoginPage> {
                           keyboardType: TextInputType.emailAddress,
                           decoration: InputDecoration(
                             labelText: 'Email',
+                            prefixIcon: Icon(Icons.email), // Added prefix icon
                             border: OutlineInputBorder(),
                           ),
                         ),
@@ -58,6 +60,7 @@ class _LoginPageState extends State<LoginPage> {
                           obscureText: true,
                           decoration: InputDecoration(
                             labelText: 'Password',
+                            prefixIcon: Icon(Icons.lock), // Added prefix icon
                             border: OutlineInputBorder(),
                           ),
                         ),
@@ -67,13 +70,13 @@ class _LoginPageState extends State<LoginPage> {
                   SizedBox(height: 20),
                   Text("Sign-in using Google"),
                   SizedBox(height: 10),
-                  TextButton(
+                  ElevatedButton( // Styled Google sign-in button
                     onPressed: () async {
                       try {
                         UserCredential? credential = await signInWithGoogle();
                         if (credential != null) {
                           userCredential.value = credential;
-                           await saveLoginStatus(true); 
+                          await saveLoginStatus(true);
                           print(FirebaseAuth.instance.currentUser?.displayName);
                           Navigator.pushReplacement(
                             context,
@@ -85,12 +88,20 @@ class _LoginPageState extends State<LoginPage> {
                         print('Sign-in error: $e');
                       }
                     },
-                    child: Container(
-                      child: Image.asset(
-                        'assets/google_logo.png',
-                        width: 50,
-                        height: 50,
-                      ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Image.asset(
+                          'assets/google_logo.png',
+                          width: 30,
+                          height: 30,
+                        ),
+                        SizedBox(width: 10),
+                        Text(
+                          'Sign in with Google',
+                          style: TextStyle(fontSize: 18),
+                        ),
+                      ],
                     ),
                   ),
                 ],
@@ -120,25 +131,34 @@ class GoogleSignInScreen extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Container(
-            clipBehavior: Clip.antiAlias,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              border: Border.all(width: 1.5, color: Colors.black54),
-            ),
-            child: Image.network(user?.photoURL.toString() ?? ''),
+          CircleAvatar( // Display user profile picture in a circle avatar
+            backgroundImage: NetworkImage(user?.photoURL.toString() ?? ''),
+            radius: 50,
           ),
           const SizedBox(height: 20),
-          Text(user?.displayName.toString() ?? ''),
-          const SizedBox(height: 20),
-          Text(user?.email.toString() ?? ''),
+          Text(
+            user?.displayName.toString() ?? '',
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 10),
+          Text(
+            user?.email.toString() ?? '',
+            style: TextStyle(fontSize: 16),
+          ),
           const SizedBox(height: 30),
           ElevatedButton(
             onPressed: () async {
               bool result = await signOutFromGoogle();
               if (result) userCredential.value = null;
             },
-            child: const Text('Logout'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red, // Logout button color
+              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+            ),
+            child: const Text(
+              'Logout',
+              style: TextStyle(fontSize: 18),
+            ),
           ),
         ],
       ),
