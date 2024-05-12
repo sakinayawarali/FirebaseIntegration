@@ -222,7 +222,8 @@ class _MainScreenState extends State<mainScreen> {
 
                         if (!snapshot.hasData) {
                           return const Center(
-                              child: CircularProgressIndicator());
+                            child: CircularProgressIndicator(),
+                          );
                         }
 
                         final entries = snapshot.data!.docs;
@@ -234,11 +235,10 @@ class _MainScreenState extends State<mainScreen> {
                             itemCount: entries.length,
                             itemBuilder: (context, index) {
                               final entry = entries[index];
-                              final uploaderName =
+                              var uploaderName =
                                   entry['uploaderName'] as String?;
-                              final title = entry['title'] as String?;
-                              final description =
-                                  entry['description'] as String?;
+                              var title = entry['title'] as String?;
+                              var description = entry['description'] as String?;
                               final createdAt =
                                   entry['createdAt'] as Timestamp?;
                               final profilePictureUrl =
